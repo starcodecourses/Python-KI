@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.patches import Patch
+import requests
+import pandas as pd
+from tqdm import tqdm
 
 def plot_sample_images(X, y, num_samples=5):
     plt.figure(figsize=(10, 5))
@@ -180,3 +183,43 @@ def falsche_vorhersagen_visualisieren(X_test, y_test, predicted_labels, incorrec
 
     plt.tight_layout()
     plt.show()
+
+class TqdmReader:
+    # Code attribution: https://stackoverflow.com/a/73093835 
+    def __init__(self, resp):
+        total_size = int(resp.headers.get("Content-Length", 0))
+
+        self.resp = resp
+        self.bar = tqdm(
+            desc=resp.url.split("/")[-1],
+            total=total_size,
+            unit="iB",
+            unit_scale=True,
+            unit_divisor=1024,
+        )
+
+        self.reader = self.read_from_stream()
+
+    def read_from_stream(self):
+        for line in self.resp.iter_lines():
+            line += b"\n"
+            self.bar.update(len(line))
+            yield line
+
+    def read(self, n=0):
+        try:
+            return next(self.reader)
+        except StopIteration:
+            return ""
+        
+def download_csv(url):
+    with requests.get(url, params=None, stream=True) as resp:
+        df = pd.read_csv(TqdmReader(resp))
+
+    return df
+
+def csv_herunterladen(url):
+    with requests.get(url, params=None, stream=True) as resp:
+        df = pd.read_csv(TqdmReader(resp))
+
+    return df
