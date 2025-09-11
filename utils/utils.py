@@ -5,7 +5,7 @@ import requests
 import pandas as pd
 from tqdm import tqdm
 
-def plot_sample_images(X, y, num_samples=5):
+def show_sample_images(X, y, num_samples=5):
     plt.figure(figsize=(10, 5))
     
     for i in range(num_samples):
@@ -76,7 +76,7 @@ def plot_train_test_split_pie(X_train, X_test):
     plt.show()
 
 # Plotting accuracy and loss
-def plot_training_history(history):
+def visualize_training_history(history):
     # Get the values from the training history
     acc = history.history['accuracy']
     loss = history.history['loss']
